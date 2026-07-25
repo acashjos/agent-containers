@@ -1,7 +1,3 @@
-#!/bin/zsh
-INSTALL_LOCATION="$HOME/.zshrc"
-
-# For Bash
 ##!/bin/bash
 # INSTALL_LOCATION="$HOME/.bashrc"
 
