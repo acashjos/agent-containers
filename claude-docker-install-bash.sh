@@ -1,5 +1,5 @@
 ##!/bin/bash
-# INSTALL_LOCATION="$HOME/.bashrc"
+INSTALL_LOCATION="$HOME/.bashrc"
 
 # For Development
 # INSTALL_LOCATION="$(pwd)/.testrcfile"
