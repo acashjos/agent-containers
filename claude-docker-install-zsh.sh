@@ -21,7 +21,8 @@ RUN chown -R claudeuser:claudeuser /workspace /home/claudeuser
 VOLUME ["/home/claudeuser"]
 USER claudeuser
 # rtk installation script
-RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh && \
+  echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.bashrc
 ENTRYPOINT ["claude", "--dangerously-skip-permissions"]
 
 EOF
