@@ -13,7 +13,7 @@ cd ~/.claude-docker
 cat > Dockerfile << EOF
 FROM node:22-slim
 RUN apt-get update && apt-get install -y git curl gh && rm -rf /var/lib/apt/lists/*
-RUN apt install golang-go
+RUN apt update && apt install -y golang-go
 RUN npm install -g @anthropic-ai/claude-code
 RUN groupadd --gid 1001 claudeuser && useradd --uid 1001 --gid 1001 --create-home --home-dir /home/claudeuser --shell /bin/bash claudeuser
 ENV HOME=/home/claudeuser
