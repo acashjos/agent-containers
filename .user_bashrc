@@ -1,0 +1,2 @@
+alias npmr='npm run'
+alias npxy='npx --yes'alias claude-docker-sh="docker run -it --entrypoint /bin/bash -v "$HOME/.claude-docker:/home/claudeuser" -v "$(pwd)":/workspace claude-docker:latest"

@@ -29,20 +29,30 @@ curl -sSL $DOCKERFILE_GIST > Dockerfile
 # build docker image
 docker build . -t claude-docker --no-cache
 
+MARKER_START="# >>> claude-docker >>>"
+MARKER_END="# <<< claude-docker <<<"
+
+touch "$INSTALL_LOCATION"
+
+# strip any block from a previous run so re-running (or switching variants) updates in place instead of duplicating
+if grep -q "$MARKER_START" "$INSTALL_LOCATION" 2>/dev/null; then
+  sed -i.bak "/$MARKER_START/,/$MARKER_END/d" "$INSTALL_LOCATION" && rm -f "$INSTALL_LOCATION.bak"
+fi
+
 cat >> $INSTALL_LOCATION <<EOF
+$MARKER_START
 alias claude-docker-sh="docker run -it \
 --entrypoint /bin/bash \
+--name "\$(basename "\$(pwd)")" \
 -v "\$HOME/.claude-docker:/home/claudeuser" \
 -v "\$(pwd)":/workspace \
 claude-docker:latest"
-EOF
-
-# claude-docker
-cat >> $INSTALL_LOCATION <<EOF
 alias claude-docker="docker run -it \
+--name "\$(basename "\$(pwd)")" \
 -v "\$HOME/.claude-docker:/home/claudeuser" \
 -v "\$(pwd)":/workspace \
 claude-docker:latest"
+$MARKER_END
 EOF
 
 echo "\n\n run: \`claude-docker-sh\` at your project directory to open bash shell in the docker container"
