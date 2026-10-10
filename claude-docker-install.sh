@@ -29,35 +29,41 @@ curl -sSL $DOCKERFILE_GIST > Dockerfile
 # build docker image
 docker build . -t claude-docker --no-cache
 
-MARKER_START="# >>> claude-docker >>>"
-MARKER_END="# <<< claude-docker <<<"
+# the docker run command itself lives here, not in the rc file, so the alias stays a one-liner
+cat > run.sh <<'EOF'
+#!/bin/sh
+ENTRYPOINT_FLAGS=""
+if [ "$1" = "sh" ]; then
+  ENTRYPOINT_FLAGS="--entrypoint /bin/bash"
+fi
+
+DIRNAME="$(basename "$(pwd)")"
+SUFFIX="$(awk 'BEGIN{srand(); printf "%02d", int(rand()*100)}')"
+
+MSYS_NO_PATHCONV=1 docker run -it --rm \
+  $ENTRYPOINT_FLAGS \
+  --name "$DIRNAME-$SUFFIX" \
+  -v "$HOME/.claude-docker:/home/claudeuser" \
+  -v "$(pwd)":/workspace/$DIRNAME \
+  -w /workspace/$DIRNAME \
+  claude-docker:latest
+EOF
+chmod +x run.sh
 
 touch "$INSTALL_LOCATION"
 
-# strip any block from a previous run so re-running (or switching variants) updates in place instead of duplicating
-if grep -q "$MARKER_START" "$INSTALL_LOCATION" 2>/dev/null; then
-  sed -i.bak "/$MARKER_START/,/$MARKER_END/d" "$INSTALL_LOCATION" && rm -f "$INSTALL_LOCATION.bak"
+# migrate away from the old multi-line marker block from earlier versions of this script, if present
+if grep -q "# >>> claude-docker >>>" "$INSTALL_LOCATION" 2>/dev/null; then
+  sed -i.bak "/# >>> claude-docker >>>/,/# <<< claude-docker <<</d" "$INSTALL_LOCATION" && rm -f "$INSTALL_LOCATION.bak"
 fi
 
-cat >> $INSTALL_LOCATION <<EOF
-$MARKER_START
-alias claude-docker-sh="docker run -it \
---entrypoint /bin/bash \
---name "\$(basename "\$(pwd)")" \
--v "\$HOME/.claude-docker:/home/claudeuser" \
--v "\$(pwd)":/workspace \
-claude-docker:latest"
-alias claude-docker="docker run -it \
---name "\$(basename "\$(pwd)")" \
--v "\$HOME/.claude-docker:/home/claudeuser" \
--v "\$(pwd)":/workspace \
-claude-docker:latest"
-$MARKER_END
-EOF
+# single alias line: drop any previous one, then append the current one. `claude-docker sh` opens a shell instead.
+sed -i.bak '/^alias claude-docker=/d' "$INSTALL_LOCATION" && rm -f "$INSTALL_LOCATION.bak"
+echo "alias claude-docker=\"$HOME/.claude-docker/run.sh\"" >> "$INSTALL_LOCATION"
 
-echo "\n\n run: \`claude-docker-sh\` at your project directory to open bash shell in the docker container"
-echo " run: \`claude-docker\` at your project directory to start claude in a docker container"
+echo "\n\n run: \`claude-docker\` at your project directory to start claude in a docker container"
+echo " run: \`claude-docker sh\` at your project directory to open a bash shell in the docker container instead"
 echo "At first run, please use \`\\login\` command to complete the setup"
 
-echo "\n sourcing $INSTALL_LOCATION to apply the changes"
-. $INSTALL_LOCATION
+echo "\n $INSTALL_LOCATION was updated, but this script's shell can't apply that to your current terminal."
+echo " run: \`source $INSTALL_LOCATION\` yourself (or open a new terminal) before using the alias"
