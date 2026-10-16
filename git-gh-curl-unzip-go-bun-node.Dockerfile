@@ -11,7 +11,7 @@ VOLUME ["/home/agentuser"]
 USER agentuser
 RUN curl -fsSL https://bun.com/install | bash && bun --version
 # rtk installation script
-RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
-# ENTRYPOINT ["claude", "--channels", "plugin:telegram@claude-plugins-official", "--dangerously-skip-permissions"]
+# RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+ENTRYPOINT ["claude", "--channels", "plugin:telegram@claude-plugins-official", "--dangerously-skip-permissions"]
 ENTRYPOINT ["claude", "--dangerously-skip-permissions"]
 

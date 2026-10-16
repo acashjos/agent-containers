@@ -9,6 +9,6 @@ RUN chown -R agentuser:agentuser /workspace /home/agentuser
 VOLUME ["/home/agentuser"]
 USER agentuser
 # rtk installation script
-RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh && \
-  echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.bashrc
+# RUN curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh && \
+  # echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.bashrc
 ENTRYPOINT ["claude", "--dangerously-skip-permissions"]
