@@ -43,7 +43,7 @@ SUFFIX="$(awk 'BEGIN{srand(); printf "%02d", int(rand()*100)}')"
 MSYS_NO_PATHCONV=1 docker run -it --rm \
   $ENTRYPOINT_FLAGS \
   --name "$DIRNAME-$SUFFIX" \
-  -v "$HOME/.claude-docker:/home/claudeuser" \
+  -v "$HOME/.claude-docker:/home/agentuser" \
   -v "$(pwd)":/workspace/$DIRNAME \
   -w /workspace/$DIRNAME \
   claude-docker:latest
